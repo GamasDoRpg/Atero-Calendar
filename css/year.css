@@ -1,0 +1,243 @@
+.year-view {
+  min-height: 100%;
+  padding: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(var(--accent-rgb), 0.08), transparent 28%),
+    var(--surface-soft);
+}
+
+.year-view-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-sm);
+}
+
+.year-view-heading {
+  display: grid;
+  gap: 2px;
+}
+
+.year-view-heading span {
+  color: var(--text-faint);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.year-view-heading strong {
+  color: var(--text);
+  font-size: 1.45rem;
+  letter-spacing: -0.04em;
+}
+
+.year-view-actions,
+.year-jump-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.year-jump-form label {
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+
+.year-jump-form input {
+  width: 92px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: 0;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-weight: 750;
+}
+
+.year-jump-form input:focus {
+  border-color: rgba(var(--accent-rgb), 0.7);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.13);
+}
+
+.year-skip-button,
+.year-go-button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.year-skip-button:hover {
+  border-color: rgba(var(--accent-rgb), 0.35);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.year-go-button {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.year-go-button:hover {
+  background: var(--accent-hover);
+  color: #ffffff;
+}
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.year-month {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.year-month:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--accent-rgb), 0.35);
+  box-shadow: 0 12px 28px rgba(20, 45, 50, 0.08);
+}
+
+.year-month-title {
+  width: 100%;
+  padding: 0 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.year-month-title:hover {
+  color: var(--accent-hover);
+}
+
+.year-month-weekdays,
+.year-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.year-month-weekdays {
+  margin-bottom: 3px;
+}
+
+.year-month-weekdays span {
+  padding: 3px 0;
+  color: var(--text-faint);
+  font-size: 0.59rem;
+  font-weight: 780;
+  text-align: center;
+}
+
+.year-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 0.66rem;
+  cursor: pointer;
+}
+
+.year-day:not(.is-empty):hover {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.year-day.is-empty {
+  pointer-events: none;
+}
+
+.year-day.is-today {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 850;
+}
+
+.year-day-number {
+  line-height: 1;
+}
+
+.year-event-dots {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  left: 3px;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+.year-event-dots span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--event-color, var(--accent));
+}
+
+@media (max-width: 900px) {
+  .year-view {
+    padding: 12px;
+  }
+
+  .year-view-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .year-view-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 560px) {
+  .year-view-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .year-jump-form {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+  }
+
+  .year-jump-form input {
+    flex: 1;
+  }
+
+  .year-grid {
+    grid-template-columns: 1fr;
+  }
+}
