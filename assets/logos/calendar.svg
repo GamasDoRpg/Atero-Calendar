@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Atero Calendar</title>
+  <defs>
+    <linearGradient id="g" x1="8" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7474ef"/>
+      <stop offset="1" stop-color="#4848bd"/>
+    </linearGradient>
+  </defs>
+  <rect x="5" y="7" width="54" height="52" rx="15" fill="url(#g)"/>
+  <path d="M18 5v10M46 5v10M5 23h54" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".96"/>
+  <path d="M20 34h8v8h-8zM36 34h8v8h-8zM20 47h8v7h-8zM36 47h8v7h-8z" fill="#fff" opacity=".94"/>
+</svg>
