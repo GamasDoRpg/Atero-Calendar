@@ -4,15 +4,15 @@ import {
   getPersistenceMode,
   listEvents,
   updateEvent as apiUpdateEvent
-} from "./api.js?v=2";
+} from "./api.js?v=3";
 import {
   getState,
   removeEventFromState,
   setState,
   upsertEventInState
-} from "./state.js?v=2";
+} from "./state.js?v=3";
 
-const DEFAULT_COLOR = "#5b5bd6";
+const DEFAULT_COLOR = "#00c7df";
 
 function safeColor(value) {
   const color = String(value || "").trim();
