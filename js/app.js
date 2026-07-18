@@ -27,6 +27,7 @@ import {
   setState,
   subscribe
 } from "./state.js?v=3";
+import { renderYearCalendar } from "./year-view.js?v=3";
 
 let calendarRoot = null;
 let miniCalendarRoot = null;
@@ -123,7 +124,12 @@ function renderSyncStatus(state) {
 }
 
 function renderApplication(state) {
-  renderCalendar(calendarRoot, state);
+  if (state.view === "year") {
+    renderYearCalendar(calendarRoot, state);
+  } else {
+    renderCalendar(calendarRoot, state);
+  }
+
   renderMiniCalendar(miniCalendarRoot, state);
   renderCalendarList(state);
   renderSyncStatus(state);
