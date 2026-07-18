@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f7f7fb">
+  <meta name="theme-color" content="#00c7df">
   <meta name="description" content="Atero Calendar — organize eventos, compromissos e projetos em um só lugar.">
 
   <title>Atero Calendar</title>
@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="css/calendar.css?v=2">
   <link rel="stylesheet" href="css/modal.css?v=2">
   <link rel="stylesheet" href="css/responsive.css?v=2">
+  <link rel="stylesheet" href="css/year.css?v=3">
+  <link rel="stylesheet" href="css/theme.css?v=3">
 </head>
 <body>
   <section
@@ -78,6 +80,7 @@
           <button type="button" data-view="month" aria-pressed="true">Mês</button>
           <button type="button" data-view="week" aria-pressed="false">Semana</button>
           <button type="button" data-view="day" aria-pressed="false">Dia</button>
+          <button type="button" data-view="year" aria-pressed="false">Ano</button>
         </div>
 
         <button class="profile-chip" id="profile-chip" type="button" title="Conta Atero">
@@ -190,6 +193,7 @@
           <label class="form-field">
             <span>Cor</span>
             <select id="event-color" name="color">
+              <option value="#00c7df">Ciano</option>
               <option value="#5b5bd6">Índigo</option>
               <option value="#0f9f6e">Verde</option>
               <option value="#d97706">Âmbar</option>
@@ -223,6 +227,6 @@
 
   <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 
-  <script type="module" src="js/bootstrap.js?v=2"></script>
+  <script type="module" src="js/bootstrap.js?v=3"></script>
 </body>
 </html>
