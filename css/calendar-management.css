@@ -1,0 +1,188 @@
+.sidebar-add-button,
+.calendar-edit-button {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.sidebar-add-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.sidebar-add-button:hover,
+.calendar-edit-button:hover {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+}
+
+.calendar-filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 30px;
+  align-items: center;
+  border-radius: 9px;
+}
+
+.calendar-filter-row:hover {
+  background: var(--surface-soft);
+}
+
+.calendar-filter-row .calendar-filter:hover {
+  background: transparent;
+}
+
+.calendar-filter-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-filter small {
+  margin-left: auto;
+  color: var(--text-faint);
+  font-size: .61rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.calendar-edit-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: .7rem;
+  letter-spacing: .08em;
+}
+
+.calendar-list-message {
+  margin: 4px 8px;
+  color: var(--text-faint);
+  font-size: .76rem;
+}
+
+.event-dialog {
+  width: min(780px, calc(100vw - 28px));
+}
+
+.form-section {
+  display: grid;
+  gap: 14px;
+  padding: 17px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.form-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-section-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.form-section-label {
+  color: var(--text);
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.form-section-heading small,
+.form-field small {
+  color: var(--text-faint);
+  font-size: .68rem;
+  line-height: 1.35;
+}
+
+.recurrence-advanced {
+  display: grid;
+  gap: 14px;
+}
+
+.recurrence-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.weekday-picker {
+  display: grid;
+  gap: 8px;
+}
+
+.weekday-picker > span {
+  color: var(--text-soft);
+  font-size: .74rem;
+  font-weight: 720;
+}
+
+.weekday-picker > div,
+.reminder-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.weekday-picker label,
+.reminder-picker label {
+  position: relative;
+  cursor: pointer;
+}
+
+.weekday-picker input,
+.reminder-picker input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.weekday-picker label span,
+.reminder-picker label span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.weekday-picker input:checked + span,
+.reminder-picker input:checked + span {
+  border-color: color-mix(in srgb, var(--accent) 55%, white);
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.calendar-dialog {
+  width: min(500px, calc(100vw - 28px));
+}
+
+.calendar-dialog .dialog-body {
+  grid-template-columns: 1fr;
+}
+
+#calendar-color {
+  min-height: 48px;
+  padding: 5px;
+}
+
+@media (max-width: 700px) {
+  .recurrence-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section {
+    padding: 14px;
+  }
+}
