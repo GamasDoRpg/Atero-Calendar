@@ -1,52 +1,228 @@
-<html
-  lang="pt-BR"
-  data-access-state="checking"
->
-  <head>
-    <link
-      rel="stylesheet"
-      href="css/access-guard.css?v=1"
-    >
-  </head>
-  <main>
-    <body>
+<!DOCTYPE html>
+<html lang="pt-BR" data-access-state="checking">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f7fb">
+  <meta name="description" content="Atero Calendar — organize eventos, compromissos e projetos em um só lugar.">
 
-      <section
-        class="atero-access-screen"
-        id="atero-access-screen"
-        role="status"
-        aria-live="polite"
-      >
-        <div class="atero-access-card">
-          <div
-            class="atero-access-spinner"
-            aria-hidden="true"
-          ></div>
-    
-          <h1>Verificando acesso</h1>
-    
-          <p>
-            Preparando o aplicativo.
-          </p>
-        </div>
-      </section>
-    
-    
-      <div class="app-shell">
-    
-        <!--
-          Todo o header, main, dialogs
-          e footer do aplicativo ficam aqui.
-        -->
-    
+  <title>Atero Calendar</title>
+
+  <link rel="icon" href="assets/logos/calendar.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/global.css?v=2">
+  <link rel="stylesheet" href="css/access-guard.css?v=2">
+  <link rel="stylesheet" href="css/sidebar.css?v=2">
+  <link rel="stylesheet" href="css/calendar.css?v=2">
+  <link rel="stylesheet" href="css/modal.css?v=2">
+  <link rel="stylesheet" href="css/responsive.css?v=2">
+</head>
+<body>
+  <section
+    class="atero-access-screen"
+    id="atero-access-screen"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="atero-access-card">
+      <div class="atero-access-spinner" aria-hidden="true"></div>
+      <h1>Verificando acesso</h1>
+      <p>Preparando o Atero Calendar.</p>
+    </div>
+  </section>
+
+  <div class="app-shell" id="app-shell">
+    <header class="app-header">
+      <div class="header-start">
+        <button
+          class="icon-button mobile-only"
+          id="sidebar-toggle"
+          type="button"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+        >
+          <span aria-hidden="true">☰</span>
+        </button>
+
+        <a class="brand" href="https://atero.space" aria-label="Voltar ao Atero">
+          <img src="assets/logos/calendar.svg" alt="" width="38" height="38">
+          <span>
+            <strong>Atero</strong>
+            <small>Calendar</small>
+          </span>
+        </a>
       </div>
-    
-    
-      <script
-        type="module"
-        src="js/bootstrap.js?v=1"
-      ></script>
-    
-    </body>
-  </main>
+
+      <div class="header-center">
+        <button class="secondary-button" id="today-button" type="button">Hoje</button>
+
+        <div class="period-navigation" aria-label="Navegação do calendário">
+          <button class="icon-button" id="previous-period" type="button" aria-label="Período anterior">‹</button>
+          <button class="icon-button" id="next-period" type="button" aria-label="Próximo período">›</button>
+        </div>
+
+        <h1 id="period-title">Calendário</h1>
+      </div>
+
+      <div class="header-end">
+        <label class="search-field" for="event-search">
+          <span aria-hidden="true">⌕</span>
+          <input
+            id="event-search"
+            type="search"
+            placeholder="Buscar eventos"
+            autocomplete="off"
+          >
+        </label>
+
+        <div class="view-switcher" role="group" aria-label="Visualização">
+          <button type="button" data-view="month" aria-pressed="true">Mês</button>
+          <button type="button" data-view="week" aria-pressed="false">Semana</button>
+          <button type="button" data-view="day" aria-pressed="false">Dia</button>
+        </div>
+
+        <button class="profile-chip" id="profile-chip" type="button" title="Conta Atero">
+          <span id="profile-initials">A</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <aside class="calendar-sidebar" id="calendar-sidebar" aria-label="Painel lateral">
+        <button class="new-event-button" id="new-event-button" type="button">
+          <span aria-hidden="true">＋</span>
+          Novo evento
+        </button>
+
+        <section class="sidebar-section mini-calendar-section" aria-labelledby="mini-calendar-title">
+          <div class="sidebar-section-header">
+            <h2 id="mini-calendar-title">Data</h2>
+          </div>
+          <div id="mini-calendar" class="mini-calendar"></div>
+        </section>
+
+        <section class="sidebar-section" aria-labelledby="calendars-title">
+          <div class="sidebar-section-header">
+            <h2 id="calendars-title">Meus calendários</h2>
+          </div>
+          <div id="calendar-list" class="calendar-list"></div>
+        </section>
+
+        <div class="sidebar-footer">
+          <span class="sync-dot" id="sync-dot" aria-hidden="true"></span>
+          <span id="sync-status">Carregando eventos…</span>
+        </div>
+      </aside>
+
+      <main class="calendar-workspace">
+        <div class="mobile-toolbar mobile-only">
+          <button class="secondary-button" id="mobile-today-button" type="button">Hoje</button>
+          <div class="mobile-period-controls">
+            <button class="icon-button" id="mobile-previous-period" type="button" aria-label="Período anterior">‹</button>
+            <strong id="mobile-period-title">Calendário</strong>
+            <button class="icon-button" id="mobile-next-period" type="button" aria-label="Próximo período">›</button>
+          </div>
+        </div>
+
+        <section
+          id="calendar-root"
+          class="calendar-root"
+          aria-label="Calendário"
+          aria-live="polite"
+        ></section>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="event-dialog" id="event-dialog" aria-labelledby="event-dialog-title">
+    <form method="dialog" id="event-form" novalidate>
+      <input type="hidden" id="event-id">
+
+      <div class="dialog-header">
+        <div>
+          <p class="dialog-eyebrow" id="event-dialog-mode">Novo compromisso</p>
+          <h2 id="event-dialog-title">Criar evento</h2>
+        </div>
+        <button class="icon-button" id="close-event-dialog" type="button" aria-label="Fechar">×</button>
+      </div>
+
+      <div class="dialog-body">
+        <label class="form-field form-field-wide">
+          <span>Título</span>
+          <input id="event-title" name="title" type="text" maxlength="120" required placeholder="Nome do evento">
+          <small class="field-error" data-error-for="title"></small>
+        </label>
+
+        <label class="checkbox-field form-field-wide">
+          <input id="event-all-day" name="allDay" type="checkbox">
+          <span>Evento de dia inteiro</span>
+        </label>
+
+        <div class="form-grid date-time-grid">
+          <label class="form-field">
+            <span>Data inicial</span>
+            <input id="event-start-date" name="startDate" type="date" required>
+          </label>
+
+          <label class="form-field time-field">
+            <span>Horário</span>
+            <input id="event-start-time" name="startTime" type="time" step="300" required>
+          </label>
+
+          <label class="form-field">
+            <span>Data final</span>
+            <input id="event-end-date" name="endDate" type="date" required>
+          </label>
+
+          <label class="form-field time-field">
+            <span>Horário</span>
+            <input id="event-end-time" name="endTime" type="time" step="300" required>
+          </label>
+        </div>
+
+        <small class="field-error form-field-wide" data-error-for="period"></small>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Calendário</span>
+            <select id="event-calendar" name="calendarId"></select>
+          </label>
+
+          <label class="form-field">
+            <span>Cor</span>
+            <select id="event-color" name="color">
+              <option value="#5b5bd6">Índigo</option>
+              <option value="#0f9f6e">Verde</option>
+              <option value="#d97706">Âmbar</option>
+              <option value="#e11d48">Vermelho</option>
+              <option value="#0284c7">Azul</option>
+              <option value="#7c3aed">Violeta</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="form-field form-field-wide">
+          <span>Local</span>
+          <input id="event-location" name="location" type="text" maxlength="180" placeholder="Sala, endereço ou link">
+        </label>
+
+        <label class="form-field form-field-wide">
+          <span>Descrição</span>
+          <textarea id="event-description" name="description" rows="4" maxlength="2000" placeholder="Notas, contexto ou detalhes"></textarea>
+        </label>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="danger-button" id="delete-event-button" type="button" hidden>Excluir</button>
+        <div class="dialog-footer-actions">
+          <button class="secondary-button" id="cancel-event-button" type="button">Cancelar</button>
+          <button class="primary-button" id="save-event-button" type="submit">Salvar evento</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="js/bootstrap.js?v=2"></script>
+</body>
 </html>
