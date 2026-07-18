@@ -33,7 +33,7 @@ async function iniciar() {
   }
 
   try {
-    const modulo = await import("./app.js?v=2");
+    const modulo = await import("./app.js?v=3");
 
     await modulo.iniciarAplicativo({
       usuario: acesso.user,
