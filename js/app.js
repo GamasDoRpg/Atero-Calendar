@@ -1,29 +1,32 @@
-import { configureApi } from "./api.js?v=2";
+import { configureApi } from "./api.js?v=3";
 import {
   renderCalendar,
   renderMiniCalendar
-} from "./calendar.js?v=2";
+} from "./calendar.js?v=3";
 import {
+  addYears,
   parseLocalDate,
+  setYear,
   startOfDay,
-  visibleRange
-} from "./date-utils.js?v=2";
-import { loadEvents } from "./events.js?v=2";
+  visibleRange,
+  YEAR_LIMITS
+} from "./date-utils.js?v=3";
+import { loadEvents } from "./events.js?v=3";
 import {
   configureModal,
   openEvent,
   openNewEvent
-} from "./modal.js?v=2";
+} from "./modal.js?v=3";
 import {
   configureNavigation,
   selectDateFromInput,
   updateNavigation
-} from "./navigation.js?v=2";
+} from "./navigation.js?v=3";
 import {
   getState,
   setState,
   subscribe
-} from "./state.js?v=2";
+} from "./state.js?v=3";
 
 let calendarRoot = null;
 let miniCalendarRoot = null;
@@ -35,6 +38,7 @@ function initialsForUser(user) {
     user?.user_metadata?.display_name ||
     user?.user_metadata?.full_name ||
     user?.user_metadata?.name ||
+    user?.display_name ||
     user?.email ||
     "Atero";
 
@@ -140,6 +144,14 @@ async function reloadVisibleEvents() {
   }
 }
 
+function moveByYears(amount) {
+  const state = getState();
+  const nextDate = addYears(state.currentDate, amount);
+
+  setState({ currentDate: startOfDay(nextDate) });
+  reloadVisibleEvents();
+}
+
 function handleCalendarClick(event) {
   const eventButton = event.target.closest("[data-event-id]");
 
@@ -161,7 +173,26 @@ function handleCalendarClick(event) {
     return;
   }
 
+  if (action === "shift-year") {
+    const amount = Number(actionButton.dataset.amount);
+
+    if (Number.isInteger(amount)) {
+      moveByYears(amount);
+    }
+
+    return;
+  }
+
   const date = parseLocalDate(actionButton.dataset.date);
+
+  if (action === "open-month" && date) {
+    setState({
+      currentDate: startOfDay(date),
+      view: "month"
+    });
+    reloadVisibleEvents();
+    return;
+  }
 
   if (action === "open-day" && date) {
     setState({
@@ -183,6 +214,37 @@ function handleCalendarClick(event) {
       allDay: hour === null
     });
   }
+}
+
+function handleYearJump(event) {
+  const form = event.target.closest("[data-year-jump-form]");
+
+  if (!form) {
+    return;
+  }
+
+  event.preventDefault();
+  const input = form.querySelector("#year-jump-input");
+  const year = Number(input?.value);
+
+  if (!Number.isInteger(year) || year < YEAR_LIMITS.min || year > YEAR_LIMITS.max) {
+    notify(`Digite um ano entre ${YEAR_LIMITS.min} e ${YEAR_LIMITS.max}.`, "error");
+    input?.focus();
+    return;
+  }
+
+  const nextDate = setYear(getState().currentDate, year);
+
+  if (!nextDate) {
+    notify("Esse ano não pôde ser aberto.", "error");
+    return;
+  }
+
+  setState({
+    currentDate: startOfDay(nextDate),
+    view: "year"
+  });
+  reloadVisibleEvents();
 }
 
 function handleMiniCalendarClick(event) {
@@ -233,6 +295,7 @@ export async function iniciarAplicativo({ usuario, aplicativo }) {
   });
 
   calendarRoot.addEventListener("click", handleCalendarClick);
+  calendarRoot.addEventListener("submit", handleYearJump);
   miniCalendarRoot.addEventListener("click", handleMiniCalendarClick);
   subscribe(renderApplication);
   renderApplication(getState());
