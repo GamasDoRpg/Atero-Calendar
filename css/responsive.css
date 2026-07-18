@@ -1,0 +1,187 @@
+@media (max-width: 1180px) {
+  .app-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .header-center h1 {
+    min-width: 170px;
+  }
+
+  .search-field {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --header-height: 64px;
+  }
+
+  .mobile-only {
+    display: inline-flex;
+  }
+
+  .app-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0 14px;
+  }
+
+  .header-center {
+    display: none;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .header-end {
+    gap: 8px;
+  }
+
+  .view-switcher button {
+    padding: 0 9px;
+  }
+
+  .app-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .calendar-sidebar {
+    position: fixed;
+    top: var(--header-height);
+    bottom: 0;
+    left: 0;
+    z-index: 25;
+    width: min(310px, calc(100vw - 48px));
+    transform: translateX(-105%);
+    box-shadow: var(--shadow-md);
+    transition: transform 180ms ease;
+  }
+
+  body.sidebar-open .calendar-sidebar {
+    transform: translateX(0);
+  }
+
+  body.sidebar-open::after {
+    position: fixed;
+    inset: var(--header-height) 0 0 0;
+    z-index: 24;
+    background: rgba(20, 20, 32, 0.34);
+    content: "";
+  }
+
+  .calendar-workspace {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .mobile-toolbar {
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .mobile-period-controls {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .mobile-period-controls strong {
+    max-width: 190px;
+    overflow: hidden;
+    font-size: 0.83rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .calendar-root {
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 620px) {
+  .brand strong {
+    display: none;
+  }
+
+  .brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profile-chip {
+    width: 36px;
+    height: 36px;
+  }
+
+  .view-switcher button {
+    min-height: 30px;
+    padding: 0 8px;
+    font-size: 0.7rem;
+  }
+
+  .calendar-workspace {
+    padding: 8px;
+  }
+
+  .month-view {
+    min-width: 700px;
+  }
+
+  .event-dialog {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    border-radius: 16px;
+  }
+
+  .dialog-header,
+  .dialog-footer {
+    padding: 17px 18px;
+  }
+
+  .dialog-body {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .form-grid,
+  .date-time-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dialog-footer {
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .dialog-footer-actions {
+    flex: 1;
+  }
+
+  .dialog-footer-actions button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 430px) {
+  .view-switcher button[data-view="week"] {
+    display: none;
+  }
+
+  .mobile-period-controls strong {
+    max-width: 130px;
+  }
+
+  .form-grid,
+  .date-time-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .time-field[hidden] {
+    display: none;
+  }
+}
