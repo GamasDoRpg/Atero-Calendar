@@ -1,3 +1,10 @@
+function utcStamp(year, month, day, hour, minute, second = 0) {
+  const date = new Date(0);
+  date.setUTCHours(hour, minute, second, 0);
+  date.setUTCFullYear(year, month - 1, day);
+  return date.getTime();
+}
+
 function parseInput(dateValue, timeValue = "00:00") {
   const [year, month, day] = String(dateValue || "").split("-").map(Number);
   const [hour, minute] = String(timeValue || "00:00").split(":").map(Number);
@@ -43,26 +50,22 @@ export function zonedParts(value, timeZone) {
 export function zonedDateTimeToDate(dateValue, timeValue, timeZone) {
   const desired = parseInput(dateValue, timeValue);
   if (!desired || !isValidTimeZone(timeZone)) return null;
-  const desiredStamp = Date.UTC(
+  const desiredStamp = utcStamp(
     desired.year,
-    desired.month - 1,
+    desired.month,
     desired.day,
     desired.hour,
-    desired.minute,
-    0,
-    0
+    desired.minute
   );
   let instant = desiredStamp;
   for (let index = 0; index < 4; index += 1) {
     const current = zonedParts(new Date(instant), timeZone);
-    const representedStamp = Date.UTC(
+    const representedStamp = utcStamp(
       current.year,
-      current.month - 1,
+      current.month,
       current.day,
       current.hour,
-      current.minute,
-      0,
-      0
+      current.minute
     );
     const difference = representedStamp - desiredStamp;
     if (difference === 0) break;
