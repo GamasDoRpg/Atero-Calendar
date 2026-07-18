@@ -52,7 +52,11 @@ export function validateEventInput(input) {
     errors.title = "Dê um título ao evento.";
   }
 
-  if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime())) {
+  const datesAreValid =
+    !Number.isNaN(startsAt.getTime()) &&
+    !Number.isNaN(endsAt.getTime());
+
+  if (!datesAreValid) {
     errors.period = "Informe datas e horários válidos.";
   } else if (endsAt <= startsAt) {
     errors.period = "O término precisa acontecer depois do início.";
@@ -66,8 +70,8 @@ export function validateEventInput(input) {
       title,
       description: safeText(input.description, 2000),
       location: safeText(input.location, 180),
-      starts_at: startsAt.toISOString(),
-      ends_at: endsAt.toISOString(),
+      starts_at: datesAreValid ? startsAt.toISOString() : "",
+      ends_at: datesAreValid ? endsAt.toISOString() : "",
       all_day: Boolean(input.all_day),
       color: safeColor(input.color)
     }
