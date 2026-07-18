@@ -1,12 +1,15 @@
 const API_BASE_URL = "https://api.atero.space";
 const API_EVENTS_PATH = "/calendar/events";
-const LOCAL_STORAGE_PREFIX = "atero-calendar-events";
-const REQUEST_TIMEOUT = 12000;
+const API_CALENDARS_PATH = "/calendar/calendars";
+const LOCAL_EVENTS_PREFIX = "atero-calendar-events";
+const LOCAL_CALENDARS_PREFIX = "atero-calendar-calendars";
+const REQUEST_TIMEOUT = 15000;
 
-let storageKey = `${LOCAL_STORAGE_PREFIX}-anonymous`;
+let eventStorageKey = `${LOCAL_EVENTS_PREFIX}-anonymous`;
+let calendarStorageKey = `${LOCAL_CALENDARS_PREFIX}-anonymous`;
 let persistenceMode = "local";
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(message, status = 0, details = null) {
     super(message);
     this.name = "ApiError";
@@ -25,7 +28,9 @@ function safeId(value) {
 
 export function configureApi({ user }) {
   const identity = user?.id || user?.email || user?.user_metadata?.email;
-  storageKey = `${LOCAL_STORAGE_PREFIX}-${safeId(identity)}`;
+  const suffix = safeId(identity);
+  eventStorageKey = `${LOCAL_EVENTS_PREFIX}-${suffix}`;
+  calendarStorageKey = `${LOCAL_CALENDARS_PREFIX}-${suffix}`;
 }
 
 export function getPersistenceMode() {
@@ -34,11 +39,7 @@ export function getPersistenceMode() {
 
 async function parseResponse(response) {
   const text = await response.text();
-
-  if (!text) {
-    return null;
-  }
-
+  if (!text) return null;
   try {
     return JSON.parse(text);
   } catch {
@@ -46,9 +47,18 @@ async function parseResponse(response) {
   }
 }
 
+function errorMessage(data, status) {
+  const detail = data?.detail;
+  if (typeof detail === "string") return detail;
+  if (detail && typeof detail === "object") return detail.message || detail.code || `HTTP ${status}`;
+  return data?.message || `A API retornou HTTP ${status}.`;
+}
+
 async function request(path, options = {}) {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  const method = String(options.method || "GET").toUpperCase();
+  const writesData = !["GET", "HEAD", "OPTIONS"].includes(method);
 
   try {
     const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -58,25 +68,21 @@ async function request(path, options = {}) {
       headers: {
         Accept: "application/json",
         ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(writesData ? { "X-Atero-Request": "1" } : {}),
         ...options.headers
       },
       signal: controller.signal
     });
-
     const data = await parseResponse(response);
-
     if (!response.ok) {
-      const message = data?.detail || data?.message || `A API retornou HTTP ${response.status}.`;
-      throw new ApiError(message, response.status, data);
+      throw new ApiError(errorMessage(data, response.status), response.status, data);
     }
-
     persistenceMode = "api";
     return data;
   } catch (error) {
     if (error?.name === "AbortError") {
       throw new ApiError("A API demorou para responder.", 0);
     }
-
     throw error;
   } finally {
     window.clearTimeout(timeoutId);
@@ -84,71 +90,127 @@ async function request(path, options = {}) {
 }
 
 function canUseLocalFallback(error) {
-  if (!(error instanceof ApiError)) {
-    return true;
-  }
-
+  if (!(error instanceof ApiError)) return true;
   return [0, 404, 405, 501, 502, 503, 504].includes(error.status);
 }
 
-function readLocalEvents() {
+function readJson(key, fallback) {
   try {
-    const raw = localStorage.getItem(storageKey);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
   } catch (error) {
-    console.error("Não foi possível ler os eventos locais:", error);
-    return [];
+    console.error("Falha ao ler armazenamento local:", error);
+    return fallback;
   }
 }
 
-function writeLocalEvents(events) {
-  localStorage.setItem(storageKey, JSON.stringify(events));
+function writeJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
   persistenceMode = "local";
 }
 
-function localId() {
-  if (globalThis.crypto?.randomUUID) {
-    return globalThis.crypto.randomUUID();
-  }
-
-  return `evt_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+function localId(prefix) {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
-function normalizeApiList(data) {
-  if (Array.isArray(data)) {
-    return data;
-  }
-
-  if (Array.isArray(data?.events)) {
-    return data.events;
-  }
-
-  if (Array.isArray(data?.items)) {
-    return data.items;
-  }
-
+function normalizeList(data, key) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.[key])) return data[key];
+  if (Array.isArray(data?.items)) return data.items;
   return [];
 }
 
-export async function listEvents({ start, end }) {
-  const params = new URLSearchParams({
-    start: start.toISOString(),
-    end: end.toISOString()
-  });
+function defaultLocalCalendars() {
+  return [{
+    id: "default",
+    name: "Pessoal",
+    color: "#00c7df",
+    visible: true,
+    is_default: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }];
+}
 
+export async function listCalendars() {
   try {
-    const data = await request(`${API_EVENTS_PATH}?${params.toString()}`);
-    return normalizeApiList(data);
+    return normalizeList(await request(API_CALENDARS_PATH), "calendars");
   } catch (error) {
-    if (!canUseLocalFallback(error)) {
-      throw error;
-    }
-
-    console.info("A API do Calendar ainda não está disponível; usando armazenamento local.");
+    if (!canUseLocalFallback(error)) throw error;
     persistenceMode = "local";
+    const calendars = readJson(calendarStorageKey, defaultLocalCalendars());
+    if (!Array.isArray(calendars) || calendars.length === 0) {
+      const defaults = defaultLocalCalendars();
+      writeJson(calendarStorageKey, defaults);
+      return defaults;
+    }
+    return calendars;
+  }
+}
 
-    return readLocalEvents().filter((event) => {
+export async function createCalendar(payload) {
+  try {
+    const data = await request(API_CALENDARS_PATH, { method: "POST", body: JSON.stringify(payload) });
+    return data?.calendar || data;
+  } catch (error) {
+    if (!canUseLocalFallback(error)) throw error;
+    const calendars = await listCalendars();
+    const now = new Date().toISOString();
+    if (payload.is_default) calendars.forEach((calendar) => { calendar.is_default = false; });
+    const calendar = { ...payload, id: localId("cal"), created_at: now, updated_at: now };
+    calendars.push(calendar);
+    writeJson(calendarStorageKey, calendars);
+    return calendar;
+  }
+}
+
+export async function updateCalendar(calendarId, payload) {
+  try {
+    const data = await request(`${API_CALENDARS_PATH}/${encodeURIComponent(calendarId)}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload)
+    });
+    return data?.calendar || data;
+  } catch (error) {
+    if (!canUseLocalFallback(error)) throw error;
+    const calendars = await listCalendars();
+    const index = calendars.findIndex((calendar) => calendar.id === calendarId);
+    if (index < 0) throw new ApiError("Calendário não encontrado.", 404);
+    if (payload.is_default) calendars.forEach((calendar) => { calendar.is_default = false; });
+    calendars[index] = { ...calendars[index], ...payload, id: calendarId, updated_at: new Date().toISOString() };
+    writeJson(calendarStorageKey, calendars);
+    return calendars[index];
+  }
+}
+
+export async function deleteCalendar(calendarId) {
+  try {
+    await request(`${API_CALENDARS_PATH}/${encodeURIComponent(calendarId)}`, { method: "DELETE" });
+    return true;
+  } catch (error) {
+    if (!canUseLocalFallback(error)) throw error;
+    const calendars = await listCalendars();
+    if (calendars.length <= 1) throw new ApiError("A conta precisa manter ao menos um calendário.", 409);
+    const current = calendars.find((calendar) => calendar.id === calendarId);
+    const next = calendars.filter((calendar) => calendar.id !== calendarId);
+    if (!current) throw new ApiError("Calendário não encontrado.", 404);
+    if (current.is_default) next[0].is_default = true;
+    writeJson(calendarStorageKey, next);
+    const events = readJson(eventStorageKey, []).filter((event) => event.calendar_id !== calendarId);
+    writeJson(eventStorageKey, events);
+    return true;
+  }
+}
+
+export async function listEvents({ start, end }) {
+  const params = new URLSearchParams({ start: start.toISOString(), end: end.toISOString() });
+  try {
+    return normalizeList(await request(`${API_EVENTS_PATH}?${params}`), "events");
+  } catch (error) {
+    if (!canUseLocalFallback(error)) throw error;
+    persistenceMode = "local";
+    return readJson(eventStorageKey, []).filter((event) => {
       const startsAt = new Date(event.starts_at);
       const endsAt = new Date(event.ends_at);
       return startsAt <= end && endsAt >= start;
@@ -158,27 +220,15 @@ export async function listEvents({ start, end }) {
 
 export async function createEvent(payload) {
   try {
-    const data = await request(API_EVENTS_PATH, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-
+    const data = await request(API_EVENTS_PATH, { method: "POST", body: JSON.stringify(payload) });
     return data?.event || data;
   } catch (error) {
-    if (!canUseLocalFallback(error)) {
-      throw error;
-    }
-
+    if (!canUseLocalFallback(error)) throw error;
     const now = new Date().toISOString();
-    const event = {
-      ...payload,
-      id: localId(),
-      created_at: now,
-      updated_at: now
-    };
-    const events = readLocalEvents();
+    const event = { ...payload, id: localId("evt"), created_at: now, updated_at: now };
+    const events = readJson(eventStorageKey, []);
     events.push(event);
-    writeLocalEvents(events);
+    writeJson(eventStorageKey, events);
     return event;
   }
 }
@@ -189,52 +239,28 @@ export async function updateEvent(eventId, payload) {
       method: "PATCH",
       body: JSON.stringify(payload)
     });
-
     return data?.event || data;
   } catch (error) {
-    if (!canUseLocalFallback(error)) {
-      throw error;
-    }
-
-    const events = readLocalEvents();
+    if (!canUseLocalFallback(error)) throw error;
+    const events = readJson(eventStorageKey, []);
     const index = events.findIndex((event) => event.id === eventId);
-
-    if (index < 0) {
-      throw new ApiError("O evento não foi encontrado no armazenamento local.", 404);
-    }
-
-    const event = {
-      ...events[index],
-      ...payload,
-      id: eventId,
-      updated_at: new Date().toISOString()
-    };
-
-    events[index] = event;
-    writeLocalEvents(events);
-    return event;
+    if (index < 0) throw new ApiError("O evento não foi encontrado no armazenamento local.", 404);
+    events[index] = { ...events[index], ...payload, id: eventId, updated_at: new Date().toISOString() };
+    writeJson(eventStorageKey, events);
+    return events[index];
   }
 }
 
 export async function deleteEvent(eventId) {
   try {
-    await request(`${API_EVENTS_PATH}/${encodeURIComponent(eventId)}`, {
-      method: "DELETE"
-    });
+    await request(`${API_EVENTS_PATH}/${encodeURIComponent(eventId)}`, { method: "DELETE" });
     return true;
   } catch (error) {
-    if (!canUseLocalFallback(error)) {
-      throw error;
-    }
-
-    const events = readLocalEvents();
-    const nextEvents = events.filter((event) => event.id !== eventId);
-
-    if (nextEvents.length === events.length) {
-      throw new ApiError("O evento não foi encontrado no armazenamento local.", 404);
-    }
-
-    writeLocalEvents(nextEvents);
+    if (!canUseLocalFallback(error)) throw error;
+    const events = readJson(eventStorageKey, []);
+    const next = events.filter((event) => event.id !== eventId);
+    if (next.length === events.length) throw new ApiError("O evento não foi encontrado.", 404);
+    writeJson(eventStorageKey, next);
     return true;
   }
 }
