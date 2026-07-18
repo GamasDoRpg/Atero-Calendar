@@ -1,4 +1,4 @@
-import { startOfDay } from "./date-utils.js?v=2";
+import { startOfDay } from "./date-utils.js?v=3";
 
 const listeners = new Set();
 
@@ -12,7 +12,7 @@ let state = {
     {
       id: "default",
       name: "Pessoal",
-      color: "#5b5bd6",
+      color: "#00c7df",
       visible: true,
       isDefault: true
     }
