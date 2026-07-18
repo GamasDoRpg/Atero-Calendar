@@ -6,14 +6,16 @@ import {
   startOfDay,
   toDateInput,
   toTimeInput
-} from "./date-utils.js?v=2";
+} from "./date-utils.js?v=3";
 import {
   createEvent,
   deleteEvent,
   getEventById,
   updateEvent
-} from "./events.js?v=2";
-import { getState } from "./state.js?v=2";
+} from "./events.js?v=3";
+import { getState } from "./state.js?v=3";
+
+const DEFAULT_COLOR = "#00c7df";
 
 let elements = null;
 let notify = () => {};
@@ -116,7 +118,7 @@ function fillFormForCreate({ date = new Date(), hour = null, allDay = false } = 
   elements.startTime.value = toTimeInput(start);
   elements.endDate.value = toDateInput(end);
   elements.endTime.value = toTimeInput(end);
-  elements.color.value = "#5b5bd6";
+  elements.color.value = DEFAULT_COLOR;
   populateCalendars("default");
   setAllDayMode(allDay);
   clearErrors();
