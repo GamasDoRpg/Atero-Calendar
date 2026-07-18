@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#00c7df">
   <meta name="description" content="Atero Calendar — organize eventos, compromissos e projetos em um só lugar.">
-
   <title>Atero Calendar</title>
-
   <link rel="icon" href="assets/logos/calendar.png" type="image/png">
   <link rel="stylesheet" href="css/global.css?v=2">
   <link rel="stylesheet" href="css/access-guard.css?v=2">
@@ -17,14 +15,10 @@
   <link rel="stylesheet" href="css/responsive.css?v=2">
   <link rel="stylesheet" href="css/year.css?v=3">
   <link rel="stylesheet" href="css/theme.css?v=3">
+  <link rel="stylesheet" href="css/calendar-management.css?v=4">
 </head>
 <body>
-  <section
-    class="atero-access-screen"
-    id="atero-access-screen"
-    role="status"
-    aria-live="polite"
-  >
+  <section class="atero-access-screen" id="atero-access-screen" role="status" aria-live="polite">
     <div class="atero-access-card">
       <div class="atero-access-spinner" aria-hidden="true"></div>
       <h1>Verificando acesso</h1>
@@ -35,85 +29,55 @@
   <div class="app-shell" id="app-shell">
     <header class="app-header">
       <div class="header-start">
-        <button
-          class="icon-button mobile-only"
-          id="sidebar-toggle"
-          type="button"
-          aria-label="Abrir menu"
-          aria-expanded="false"
-        >
-          <span aria-hidden="true">☰</span>
-        </button>
-
+        <button class="icon-button mobile-only" id="sidebar-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span aria-hidden="true">☰</span></button>
         <a class="brand" href="https://atero.space" aria-label="Voltar ao Atero">
           <img src="assets/logos/calendar.png" alt="" width="38" height="38">
-          <span>
-            <strong>Atero</strong>
-            <small>Calendar</small>
-          </span>
+          <span><strong>Atero</strong><small>Calendar</small></span>
         </a>
       </div>
 
       <div class="header-center">
         <button class="secondary-button" id="today-button" type="button">Hoje</button>
-
         <div class="period-navigation" aria-label="Navegação do calendário">
           <button class="icon-button" id="previous-period" type="button" aria-label="Período anterior">‹</button>
           <button class="icon-button" id="next-period" type="button" aria-label="Próximo período">›</button>
         </div>
-
         <h1 id="period-title">Calendário</h1>
       </div>
 
       <div class="header-end">
         <label class="search-field" for="event-search">
           <span aria-hidden="true">⌕</span>
-          <input
-            id="event-search"
-            type="search"
-            placeholder="Buscar eventos"
-            autocomplete="off"
-          >
+          <input id="event-search" type="search" placeholder="Buscar eventos" autocomplete="off">
         </label>
-
         <div class="view-switcher" role="group" aria-label="Visualização">
           <button type="button" data-view="month" aria-pressed="true">Mês</button>
           <button type="button" data-view="week" aria-pressed="false">Semana</button>
           <button type="button" data-view="day" aria-pressed="false">Dia</button>
           <button type="button" data-view="year" aria-pressed="false">Ano</button>
         </div>
-
-        <button class="profile-chip" id="profile-chip" type="button" title="Conta Atero">
-          <span id="profile-initials">A</span>
-        </button>
+        <button class="profile-chip" id="profile-chip" type="button" title="Conta Atero"><span id="profile-initials">A</span></button>
       </div>
     </header>
 
     <div class="app-layout">
       <aside class="calendar-sidebar" id="calendar-sidebar" aria-label="Painel lateral">
-        <button class="new-event-button" id="new-event-button" type="button">
-          <span aria-hidden="true">＋</span>
-          Novo evento
-        </button>
+        <button class="new-event-button" id="new-event-button" type="button"><span aria-hidden="true">＋</span>Novo evento</button>
 
         <section class="sidebar-section mini-calendar-section" aria-labelledby="mini-calendar-title">
-          <div class="sidebar-section-header">
-            <h2 id="mini-calendar-title">Data</h2>
-          </div>
+          <div class="sidebar-section-header"><h2 id="mini-calendar-title">Data</h2></div>
           <div id="mini-calendar" class="mini-calendar"></div>
         </section>
 
         <section class="sidebar-section" aria-labelledby="calendars-title">
           <div class="sidebar-section-header">
             <h2 id="calendars-title">Meus calendários</h2>
+            <button class="sidebar-add-button" id="new-calendar-button" type="button" aria-label="Criar calendário">＋</button>
           </div>
           <div id="calendar-list" class="calendar-list"></div>
         </section>
 
-        <div class="sidebar-footer">
-          <span class="sync-dot" id="sync-dot" aria-hidden="true"></span>
-          <span id="sync-status">Carregando eventos…</span>
-        </div>
+        <div class="sidebar-footer"><span class="sync-dot" id="sync-dot" aria-hidden="true"></span><span id="sync-status">Carregando eventos…</span></div>
       </aside>
 
       <main class="calendar-workspace">
@@ -125,13 +89,7 @@
             <button class="icon-button" id="mobile-next-period" type="button" aria-label="Próximo período">›</button>
           </div>
         </div>
-
-        <section
-          id="calendar-root"
-          class="calendar-root"
-          aria-label="Calendário"
-          aria-live="polite"
-        ></section>
+        <section id="calendar-root" class="calendar-root" aria-label="Calendário" aria-live="polite"></section>
       </main>
     </div>
   </div>
@@ -139,12 +97,8 @@
   <dialog class="event-dialog" id="event-dialog" aria-labelledby="event-dialog-title">
     <form method="dialog" id="event-form" novalidate>
       <input type="hidden" id="event-id">
-
       <div class="dialog-header">
-        <div>
-          <p class="dialog-eyebrow" id="event-dialog-mode">Novo compromisso</p>
-          <h2 id="event-dialog-title">Criar evento</h2>
-        </div>
+        <div><p class="dialog-eyebrow" id="event-dialog-mode">Novo compromisso</p><h2 id="event-dialog-title">Criar evento</h2></div>
         <button class="icon-button" id="close-event-dialog" type="button" aria-label="Fechar">×</button>
       </div>
 
@@ -155,78 +109,91 @@
           <small class="field-error" data-error-for="title"></small>
         </label>
 
-        <label class="checkbox-field form-field-wide">
-          <input id="event-all-day" name="allDay" type="checkbox">
-          <span>Evento de dia inteiro</span>
-        </label>
+        <label class="checkbox-field form-field-wide"><input id="event-all-day" name="allDay" type="checkbox"><span>Evento de dia inteiro</span></label>
 
         <div class="form-grid date-time-grid">
-          <label class="form-field">
-            <span>Data inicial</span>
-            <input id="event-start-date" name="startDate" type="date" required>
-          </label>
-
-          <label class="form-field time-field">
-            <span>Horário</span>
-            <input id="event-start-time" name="startTime" type="time" step="300" required>
-          </label>
-
-          <label class="form-field">
-            <span>Data final</span>
-            <input id="event-end-date" name="endDate" type="date" required>
-          </label>
-
-          <label class="form-field time-field">
-            <span>Horário</span>
-            <input id="event-end-time" name="endTime" type="time" step="300" required>
-          </label>
+          <label class="form-field"><span>Data inicial</span><input id="event-start-date" name="startDate" type="date" required></label>
+          <label class="form-field time-field"><span>Horário</span><input id="event-start-time" name="startTime" type="time" step="300" required></label>
+          <label class="form-field"><span>Data final</span><input id="event-end-date" name="endDate" type="date" required></label>
+          <label class="form-field time-field"><span>Horário</span><input id="event-end-time" name="endTime" type="time" step="300" required></label>
         </div>
-
         <small class="field-error form-field-wide" data-error-for="period"></small>
 
         <div class="form-grid">
-          <label class="form-field">
-            <span>Calendário</span>
-            <select id="event-calendar" name="calendarId"></select>
-          </label>
-
-          <label class="form-field">
-            <span>Cor</span>
+          <label class="form-field"><span>Calendário</span><select id="event-calendar" name="calendarId"></select></label>
+          <label class="form-field"><span>Cor</span>
             <select id="event-color" name="color">
-              <option value="#00c7df">Ciano</option>
-              <option value="#5b5bd6">Índigo</option>
-              <option value="#0f9f6e">Verde</option>
-              <option value="#d97706">Âmbar</option>
-              <option value="#e11d48">Vermelho</option>
-              <option value="#0284c7">Azul</option>
-              <option value="#7c3aed">Violeta</option>
+              <option value="#00c7df">Ciano</option><option value="#5b5bd6">Índigo</option><option value="#0f9f6e">Verde</option><option value="#d97706">Âmbar</option><option value="#e11d48">Vermelho</option><option value="#0284c7">Azul</option><option value="#7c3aed">Violeta</option>
             </select>
           </label>
         </div>
 
         <label class="form-field form-field-wide">
-          <span>Local</span>
-          <input id="event-location" name="location" type="text" maxlength="180" placeholder="Sala, endereço ou link">
+          <span>Fuso horário</span>
+          <input id="event-timezone" name="timezone" type="text" maxlength="80" list="timezone-options" autocomplete="off" placeholder="America/Sao_Paulo">
+          <datalist id="timezone-options"><option value="America/Sao_Paulo"><option value="America/New_York"><option value="America/Los_Angeles"><option value="Europe/Lisbon"><option value="Europe/London"><option value="Europe/Paris"><option value="UTC"></datalist>
+          <small class="field-error" data-error-for="timezone"></small>
         </label>
 
-        <label class="form-field form-field-wide">
-          <span>Descrição</span>
-          <textarea id="event-description" name="description" rows="4" maxlength="2000" placeholder="Notas, contexto ou detalhes"></textarea>
-        </label>
+        <section class="form-section form-field-wide" aria-labelledby="repeat-title">
+          <div class="form-section-heading"><div><span class="form-section-label">Repetição</span><small>Crie aulas, reuniões e aniversários recorrentes.</small></div></div>
+          <div class="form-grid">
+            <label class="form-field"><span id="repeat-title">Repetir</span>
+              <select id="event-recurrence" name="recurrence"><option value="none">Não repetir</option><option value="daily">Diariamente</option><option value="weekly">Semanalmente</option><option value="monthly">Mensalmente</option><option value="yearly">Anualmente</option></select>
+            </label>
+          </div>
+          <div id="recurrence-advanced" class="recurrence-advanced" hidden>
+            <div class="form-grid recurrence-grid">
+              <label class="form-field"><span>Intervalo</span><input id="event-recurrence-interval" type="number" min="1" max="365" value="1"><small>Ex.: 2 significa a cada 2 semanas/meses.</small></label>
+              <label class="form-field"><span>Terminar em</span><input id="event-recurrence-until" type="date"><small>Opcional</small></label>
+              <label class="form-field"><span>Ou após ocorrências</span><input id="event-recurrence-count" type="number" min="1" max="10000" placeholder="Sem limite"><small>Opcional</small></label>
+            </div>
+            <div id="recurrence-weekdays" class="weekday-picker" hidden>
+              <span>Dias da semana</span>
+              <div><label><input type="checkbox" data-recurrence-weekday="0"><span>Seg</span></label><label><input type="checkbox" data-recurrence-weekday="1"><span>Ter</span></label><label><input type="checkbox" data-recurrence-weekday="2"><span>Qua</span></label><label><input type="checkbox" data-recurrence-weekday="3"><span>Qui</span></label><label><input type="checkbox" data-recurrence-weekday="4"><span>Sex</span></label><label><input type="checkbox" data-recurrence-weekday="5"><span>Sáb</span></label><label><input type="checkbox" data-recurrence-weekday="6"><span>Dom</span></label></div>
+            </div>
+          </div>
+          <small class="field-error" data-error-for="recurrence"></small>
+        </section>
+
+        <section class="form-section form-field-wide" aria-labelledby="reminder-title">
+          <div class="form-section-heading"><div><span class="form-section-label" id="reminder-title">Lembretes por e-mail</span><small>Enviados para o e-mail da sua Conta Atero.</small></div></div>
+          <div class="reminder-picker">
+            <label><input type="checkbox" data-reminder-minutes="0"><span>Na hora</span></label>
+            <label><input type="checkbox" data-reminder-minutes="10"><span>10 min antes</span></label>
+            <label><input type="checkbox" data-reminder-minutes="30"><span>30 min antes</span></label>
+            <label><input type="checkbox" data-reminder-minutes="60"><span>1 hora antes</span></label>
+            <label><input type="checkbox" data-reminder-minutes="1440"><span>1 dia antes</span></label>
+          </div>
+        </section>
+
+        <label class="form-field form-field-wide"><span>Local</span><input id="event-location" name="location" type="text" maxlength="180" placeholder="Sala, endereço ou link"></label>
+        <label class="form-field form-field-wide"><span>Descrição</span><textarea id="event-description" name="description" rows="4" maxlength="2000" placeholder="Notas, contexto ou detalhes"></textarea></label>
       </div>
 
       <div class="dialog-footer">
         <button class="danger-button" id="delete-event-button" type="button" hidden>Excluir</button>
-        <div class="dialog-footer-actions">
-          <button class="secondary-button" id="cancel-event-button" type="button">Cancelar</button>
-          <button class="primary-button" id="save-event-button" type="submit">Salvar evento</button>
-        </div>
+        <div class="dialog-footer-actions"><button class="secondary-button" id="cancel-event-button" type="button">Cancelar</button><button class="primary-button" id="save-event-button" type="submit">Salvar evento</button></div>
       </div>
     </form>
   </dialog>
 
-  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <dialog class="event-dialog calendar-dialog" id="calendar-dialog" aria-labelledby="calendar-dialog-title">
+    <form method="dialog" id="calendar-form" novalidate>
+      <input type="hidden" id="calendar-id">
+      <div class="dialog-header"><div><p class="dialog-eyebrow">Organização</p><h2 id="calendar-dialog-title">Novo calendário</h2></div><button class="icon-button" id="close-calendar-dialog" type="button" aria-label="Fechar">×</button></div>
+      <div class="dialog-body">
+        <label class="form-field form-field-wide"><span>Nome</span><input id="calendar-name" type="text" maxlength="80" required placeholder="Escola, Atero, Pessoal…"></label>
+        <label class="form-field form-field-wide"><span>Cor</span><input id="calendar-color" type="color" value="#00c7df"></label>
+        <label class="checkbox-field form-field-wide"><input id="calendar-visible" type="checkbox" checked><span>Mostrar este calendário</span></label>
+        <label class="checkbox-field form-field-wide"><input id="calendar-default" type="checkbox"><span>Usar como calendário padrão</span></label>
+        <small class="field-error form-field-wide" id="calendar-form-error"></small>
+      </div>
+      <div class="dialog-footer"><button class="danger-button" id="delete-calendar-button" type="button" hidden>Excluir</button><div class="dialog-footer-actions"><button class="secondary-button" id="cancel-calendar-button" type="button">Cancelar</button><button class="primary-button" id="save-calendar-button" type="submit">Salvar</button></div></div>
+    </form>
+  </dialog>
 
-  <script type="module" src="js/bootstrap.js?v=3"></script>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script type="module" src="js/bootstrap.js?v=4"></script>
 </body>
 </html>
