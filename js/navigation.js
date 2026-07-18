@@ -3,12 +3,12 @@ import {
   movePeriod,
   parseLocalDate,
   startOfDay
-} from "./date-utils.js?v=2";
+} from "./date-utils.js?v=3";
 import {
   getState,
   setState,
   updateCalendarVisibility
-} from "./state.js?v=2";
+} from "./state.js?v=3";
 
 let onPeriodChanged = async () => {};
 let onNewEvent = () => {};
@@ -28,7 +28,7 @@ function goToday() {
 }
 
 function setView(view) {
-  if (!["month", "week", "day"].includes(view)) {
+  if (!["year", "month", "week", "day"].includes(view)) {
     return;
   }
 
@@ -70,9 +70,11 @@ function handleKeyboard(event) {
   } else if (key === "t") {
     event.preventDefault();
     goToday();
+  } else if (key === "y" || key === "a") {
+    setView("year");
   } else if (key === "m") {
     setView("month");
-  } else if (key === "w") {
+  } else if (key === "w" || key === "s") {
     setView("week");
   } else if (key === "d") {
     setView("day");
